@@ -1,13 +1,13 @@
-import { Args, Int, Query, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { User } from './models/user.model';
-import { UserService } from './service/user.service';
+import { UsersService } from './service/user.service';
 
 @Resolver(() => User)
 export class UsersResolver {
-  constructor(private usersService: UserService) {}
+  constructor(private usersService: UsersService) {}
 
   @Query(() => User, { name: 'user', description: 'Get user by ID' })
-  async getUser(@Args('id', { type: () => Int }) id: number) {
-    return await this.usersService.findOneById(id);
+  async getUser(@Args('id', { type: () => String }) id: string) {
+    return await this.usersService.getUser({ id });
   }
 }
