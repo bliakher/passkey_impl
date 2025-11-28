@@ -10,6 +10,23 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  output = "../src/generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
+// models:
+
+model User {
+  id          String       @id @default(uuid())
+  username    String       @unique
+  credentials Credential[]
+}
+
+model Credential {
+  id         String   @id @default(uuid())
+  public_key Bytes    @unique
+  counter    BigInt
+  transports Json // list of String values
+  created_at DateTime @default(now())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+}
