@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -10,11 +11,13 @@ import { ConfigModule } from '@nestjs/config';
       driver: ApolloDriver,
       playground: false, // playground deprecated in Apollo
       graphiql: true,
-      autoSchemaFile: `${process.cwd()}src/schema.gql`,
+      autoSchemaFile: `${process.cwd()}/src/schema.gql`,
       sortSchema: true,
     }),
     // .env configuration
     ConfigModule.forRoot(),
+    // modules
+    UsersModule,
   ],
 })
 export class AppModule {}

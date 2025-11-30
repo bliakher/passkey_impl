@@ -1,0 +1,13 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Query {
+  """Get user by ID"""
+  user(id: String!): User!
+}
+
+type User {
+  id: ID!
+  username: String!
+}
