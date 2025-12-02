@@ -2,9 +2,43 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AuthenticatorSelectionDTO {
+  residentKey: RequiredLevel!
+  userVerification: RequiredLevel!
+}
+
+type Mutation {
+  startPasskeyRegistration(username: String!): RegistrationOptionsDTO!
+}
+
+type PublicKeyParamsDTO {
+  alg: String!
+  type: Int!
+}
+
 type Query {
   """Get user by ID"""
   user(id: String!): User!
+}
+
+type RegistrationOptionsDTO {
+  authenticatorSelection: AuthenticatorSelectionDTO!
+  challenge: String!
+  pubKeyCredParams: [PublicKeyParamsDTO!]!
+  rp: RpEntityDTO!
+  timeout: Int!
+}
+
+"""Is option required as defined by WebAuthn"""
+enum RequiredLevel {
+  Discouraged
+  Preferred
+  Required
+}
+
+type RpEntityDTO {
+  id: String!
+  name: String!
 }
 
 type User {

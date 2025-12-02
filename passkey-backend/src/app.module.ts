@@ -3,6 +3,8 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { UsersModule } from './users/users.module';
     ConfigModule.forRoot(),
     // modules
     UsersModule,
+    PrismaModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
