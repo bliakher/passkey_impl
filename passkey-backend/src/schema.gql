@@ -7,7 +7,15 @@ type AuthenticatorSelectionDTO {
   userVerification: RequiredLevel!
 }
 
+type LoginPayload {
+  accessToken: String!
+  accessTokenTTLSec: Float!
+  refreshToken: String!
+  refreshTokenTTLSec: Float!
+}
+
 type Mutation {
+  register(password: String!, username: String!): LoginPayload!
   startPasskeyRegistration(username: String!): RegistrationOptionsDTO!
 }
 
