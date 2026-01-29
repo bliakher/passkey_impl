@@ -7,6 +7,7 @@ import {
   UsernameAlreadyUsedError,
 } from './errors/auth.errors';
 import { LoginPayload, RefreshPayload } from './models/login-payload.model';
+import { MutationResult } from './models/result.model';
 
 @Resolver()
 export class AuthResolver {
@@ -72,6 +73,21 @@ export class AuthResolver {
     return {
       accessToken: accessToken,
       accessTokenTTLSec: 15 * 60,
+    };
+  }
+
+  @Mutation(() => MutationResult)
+  async logout(
+    @Args({ name: 'refreshToken', type: () => String }) refreshToken: string,
+  ): Promise<MutationResult> {
+    const user = await this.authService.verifyRefreshToken(refreshToken);
+    if (!user) {
+      throw new RefreshTokenInvalidError();
+    }
+
+    await this.authService.invalidateRefreshToken(user);
+    return {
+      ok: true,
     };
   }
 

@@ -31,6 +31,13 @@ export class UsersService {
     });
   }
 
+  async updateUserById(
+    userId: string,
+    data: Prisma.UserUpdateInput,
+  ): Promise<User | null> {
+    return await this.prisma.user.update({ where: { id: userId }, data });
+  }
+
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     return this.prisma.user.create({
       data,

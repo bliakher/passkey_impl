@@ -95,6 +95,12 @@ export class AuthService {
     return user;
   }
 
+  async invalidateRefreshToken(user: User): Promise<void> {
+    await this.usersService.updateUserById(user.id, {
+      tokenVersion: user.tokenVersion + 1n,
+    });
+  }
+
   async initiateRegistration(
     username: string,
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
