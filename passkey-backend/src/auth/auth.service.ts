@@ -43,6 +43,10 @@ export class AuthService {
     return hash;
   }
 
+  async verifyPassword(password: string, user: User): Promise<boolean> {
+    return await bcrypt.compare(password, user.password);
+  }
+
   async issueAccessToken(user: User): Promise<string> {
     const token = await this.jwtService.signAsync({
       sub: user.id,

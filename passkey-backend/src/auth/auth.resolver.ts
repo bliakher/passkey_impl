@@ -1,7 +1,10 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { RegistrationOptionsDTO } from './models/registration-options.model';
 import { AuthService } from './auth.service';
-import { UsernameAlreadyUsedError } from './errors/auth.errors';
+import {
+  LoginFailedError,
+  UsernameAlreadyUsedError,
+} from './errors/auth.errors';
 import { LoginPayload } from './models/login-payload.model';
 
 @Resolver()
@@ -21,6 +24,32 @@ export class AuthResolver {
     const newUser = await this.authService.createUser(username, password);
     const accessToken = await this.authService.issueAccessToken(newUser);
     const refreshToken = await this.authService.issueRefreshToken(newUser);
+
+    return {
+      accessToken: accessToken,
+      accessTokenTTLSec: 15 * 60,
+      refreshToken: refreshToken,
+      refreshTokenTTLSec: 7 * 24 * 60 * 60,
+    };
+  }
+
+  @Mutation(() => LoginPayload)
+  async login(
+    @Args({ name: 'username', type: () => String }) username: string,
+    @Args({ name: 'password', type: () => String }) password: string,
+  ): Promise<LoginPayload> {
+    const user = await this.authService.getUserByUsername(username);
+    if (!user) {
+      throw new LoginFailedError();
+    }
+
+    const valid = await this.authService.verifyPassword(password, user);
+    if (!valid) {
+      throw new LoginFailedError();
+    }
+
+    const accessToken = await this.authService.issueAccessToken(user);
+    const refreshToken = await this.authService.issueRefreshToken(user);
 
     return {
       accessToken: accessToken,

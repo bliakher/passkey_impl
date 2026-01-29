@@ -10,3 +10,14 @@ export class UsernameAlreadyUsedError extends GraphQLError {
     });
   }
 }
+
+export class LoginFailedError extends GraphQLError {
+  constructor() {
+    super('Username or password incorrect', {
+      extensions: {
+        code: 'LOGIN_FAILED',
+        http: { status: 400 },
+      },
+    });
+  }
+}
