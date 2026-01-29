@@ -14,3 +14,12 @@ export class LoginPayload {
   @Field(() => Number)
   refreshTokenTTLSec: number;
 }
+
+@ObjectType()
+export class RefreshPayload {
+  @Field(() => String)
+  accessToken: string;
+
+  @Field(() => Number)
+  accessTokenTTLSec: number;
+}

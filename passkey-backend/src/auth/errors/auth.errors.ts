@@ -21,3 +21,14 @@ export class LoginFailedError extends GraphQLError {
     });
   }
 }
+
+export class RefreshTokenInvalidError extends GraphQLError {
+  constructor() {
+    super('Refresh token invalid', {
+      extensions: {
+        code: 'REFRESH_INVALID',
+        http: { status: 400 },
+      },
+    });
+  }
+}

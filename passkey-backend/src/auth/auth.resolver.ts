@@ -3,9 +3,10 @@ import { RegistrationOptionsDTO } from './models/registration-options.model';
 import { AuthService } from './auth.service';
 import {
   LoginFailedError,
+  RefreshTokenInvalidError,
   UsernameAlreadyUsedError,
 } from './errors/auth.errors';
-import { LoginPayload } from './models/login-payload.model';
+import { LoginPayload, RefreshPayload } from './models/login-payload.model';
 
 @Resolver()
 export class AuthResolver {
@@ -47,7 +48,6 @@ export class AuthResolver {
     if (!valid) {
       throw new LoginFailedError();
     }
-
     const accessToken = await this.authService.issueAccessToken(user);
     const refreshToken = await this.authService.issueRefreshToken(user);
 
@@ -56,6 +56,22 @@ export class AuthResolver {
       accessTokenTTLSec: 15 * 60,
       refreshToken: refreshToken,
       refreshTokenTTLSec: 7 * 24 * 60 * 60,
+    };
+  }
+
+  @Mutation(() => RefreshPayload)
+  async refresh(
+    @Args({ name: 'refreshToken', type: () => String }) refreshToken: string,
+  ): Promise<RefreshPayload> {
+    const user = await this.authService.verifyRefreshToken(refreshToken);
+    if (!user) {
+      throw new RefreshTokenInvalidError();
+    }
+    const accessToken = await this.authService.issueAccessToken(user);
+
+    return {
+      accessToken: accessToken,
+      accessTokenTTLSec: 15 * 60,
     };
   }
 

@@ -13,6 +13,17 @@ enum UserRole {
   USER = 'USER',
 }
 
+interface AccessTokenPayload {
+  sub: string;
+  username: string;
+  role: UserRole;
+}
+
+interface RefreshTokenPayload {
+  sub: string;
+  tokenVersion: bigint;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -48,26 +59,40 @@ export class AuthService {
   }
 
   async issueAccessToken(user: User): Promise<string> {
-    const token = await this.jwtService.signAsync({
+    const payload: AccessTokenPayload = {
       sub: user.id,
       username: user.username,
       role: UserRole.USER,
-    });
+    };
+    const token = await this.jwtService.signAsync(payload);
     return token;
   }
 
   async issueRefreshToken(user: User): Promise<string> {
-    const token = await this.jwtService.signAsync(
-      {
-        sub: user.id,
-        tokenVersion: 0, //TODO: add token version to user, revoke refresh tokens
-      },
+    const payload: RefreshTokenPayload = {
+      sub: user.id,
+      tokenVersion: user.tokenVersion, //TODO: revoke refresh tokens
+    };
+    const token = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: '7d',
+    });
+    return token;
+  }
+
+  async verifyRefreshToken(token: string): Promise<User | null> {
+    const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(
+      token,
       {
         secret: process.env.JWT_REFRESH_SECRET,
-        expiresIn: '7d',
       },
     );
-    return token;
+
+    const user = await this.usersService.getUser({ id: payload.sub });
+    if (!user || user.tokenVersion != payload.tokenVersion) {
+      return null;
+    }
+    return user;
   }
 
   async initiateRegistration(

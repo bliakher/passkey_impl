@@ -15,6 +15,8 @@ type LoginPayload {
 }
 
 type Mutation {
+  login(password: String!, username: String!): LoginPayload!
+  refresh(refreshToken: String!): RefreshPayload!
   register(password: String!, username: String!): LoginPayload!
   startPasskeyRegistration(username: String!): RegistrationOptionsDTO!
 }
@@ -27,6 +29,11 @@ type PublicKeyParamsDTO {
 type Query {
   """Get user by ID"""
   user(id: String!): User!
+}
+
+type RefreshPayload {
+  accessToken: String!
+  accessTokenTTLSec: Float!
 }
 
 type RegistrationOptionsDTO {
