@@ -19,6 +19,11 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
-    "strictBindCallApply": true
+    "strictBindCallApply": true,
+    "paths": {
+      "src/*": [
+        "src/*"
+      ]
+    }
   }
 }

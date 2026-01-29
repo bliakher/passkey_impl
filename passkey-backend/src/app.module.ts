@@ -17,7 +17,9 @@ import { AuthModule } from './auth/auth.module';
       sortSchema: true,
     }),
     // .env configuration
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+    }),
     // modules
     UsersModule,
     PrismaModule,
