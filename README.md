@@ -1,5 +1,7 @@
 # Test implementation of passkey authentication
 
+In this project, I aimed to implement an authentication flow using passkey credentials and explore various backend and frontend frameworks.
+
 ## Technologies
 
 ### Backend
@@ -10,7 +12,7 @@ The backend is implemented in Node.js using the [Nest.js](https://nestjs.com/) f
 
 ### Frontend
 
-The frontend is implemented with the [React](https://react.dev/) framework.
+The frontend is implemented with the [React](https://react.dev/) framework. Components from [Shadcn](https://ui.shadcn.com/) were used for UI.
 
 ## Running the project
 
