@@ -55,7 +55,11 @@ export class AuthService {
   }
 
   async verifyPassword(password: string, user: User): Promise<boolean> {
-    return await bcrypt.compare(password, user.password);
+    const pepper = process.env.PASSWD_PEPPER;
+    if (!pepper) {
+      throw new Error('PASSWD_PEPPER is not set');
+    }
+    return await bcrypt.compare(password + pepper, user.password);
   }
 
   async issueAccessToken(user: User): Promise<string> {
