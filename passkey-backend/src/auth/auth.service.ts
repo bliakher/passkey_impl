@@ -21,7 +21,7 @@ interface AccessTokenPayload {
 
 interface RefreshTokenPayload {
   sub: string;
-  tokenVersion: bigint;
+  tokenVersion: number;
 }
 
 @Injectable()
@@ -71,7 +71,7 @@ export class AuthService {
   async issueRefreshToken(user: User): Promise<string> {
     const payload: RefreshTokenPayload = {
       sub: user.id,
-      tokenVersion: user.tokenVersion, //TODO: revoke refresh tokens
+      tokenVersion: user.tokenVersion,
     };
     const token = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_REFRESH_SECRET,
@@ -97,7 +97,7 @@ export class AuthService {
 
   async invalidateRefreshToken(user: User): Promise<void> {
     await this.usersService.updateUserById(user.id, {
-      tokenVersion: user.tokenVersion + 1n,
+      tokenVersion: user.tokenVersion + 1,
     });
   }
 

@@ -19,7 +19,7 @@ model User {
   id           String       @id @default(uuid())
   username     String       @unique
   password     String
-  tokenVersion BigInt       @default(0)
+  tokenVersion Int          @default(0)
   credentials  Credential[]
 }
 
