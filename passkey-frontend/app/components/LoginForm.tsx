@@ -6,7 +6,6 @@ import { Button } from "~/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldError } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { useMutation } from '@apollo/client/react';
-import { REGISTER_MUT } from '~/graphql/mutations/register';
 import { LOGIN_MUT } from '~/graphql/mutations/login';
 import { useNavigate } from 'react-router';
 import { saveTokens, saveUser } from '~/lib/auth';
