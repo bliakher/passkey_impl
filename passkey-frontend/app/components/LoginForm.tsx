@@ -8,6 +8,8 @@ import { Input } from "~/components/ui/input";
 import { useMutation } from '@apollo/client/react';
 import { REGISTER_MUT } from '~/graphql/mutations/register';
 import { LOGIN_MUT } from '~/graphql/mutations/login';
+import { useNavigate } from 'react-router';
+import { saveTokens, saveUser } from '~/lib/auth';
 
 const loginFormSchema = z.object({
     email: z.email({ message: "Invalid email address" }),
@@ -19,6 +21,7 @@ export type LoginFormSchema = z.infer<typeof loginFormSchema>;
 export function LoginForm() {
 
     const [login, { error, loading, data }] = useMutation(LOGIN_MUT);
+    const navigate = useNavigate();
 
     const form = useForm<LoginFormSchema>({
         resolver: zodResolver(loginFormSchema),
@@ -31,7 +34,6 @@ export function LoginForm() {
     async function onSubmit(values: LoginFormSchema) {
         console.log('Submit:', values);
 
-
         try {
             const result = await login({
                 variables: {
@@ -40,10 +42,19 @@ export function LoginForm() {
                 },
             });
 
-            console.log("Registered user:", data); // result.data.register.user
-            alert("Registration successful!");
+            if (result.data?.login) {
+                const { accessToken, refreshToken, user } = result.data.login;
+
+                // Store tokens and user data
+                saveTokens(accessToken, refreshToken);
+                saveUser(user);
+
+                console.log("Logged in user:", user);
+                alert("Login successful!");
+                navigate('/');
+            }
         } catch (err) {
-            console.error("Registration error:", err, error);
+            console.error("Login error:", err, error);
         }
     };
 

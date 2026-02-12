@@ -8,6 +8,7 @@ import { Input } from "~/components/ui/input";
 import { useMutation } from '@apollo/client/react';
 import { REGISTER_MUT } from '~/graphql/mutations/register';
 import { useNavigate } from 'react-router';
+import { saveTokens, saveUser } from '~/lib/auth';
 
 const registerFormSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
@@ -49,9 +50,17 @@ export function RegisterForm() {
         },
       });
 
-      console.log("Registered user:", result.data);
-      alert("Registration successful!");
-      navigate('/passkey');
+      if (result.data?.register) {
+        const { accessToken, refreshToken, user } = result.data.register;
+
+        // Store tokens and user data
+        saveTokens(accessToken, refreshToken);
+        saveUser(user);
+
+        console.log("Registered user:", user);
+        alert("Registration successful!");
+        navigate('/passkey');
+      }
     } catch (err) {
       console.error("Registration error:", err, error);
     }
