@@ -1,4 +1,3 @@
-import React from 'react';
 import { z } from 'zod';
 import { useForm, FormProvider, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,6 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from "~/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldError } from "~/components/ui/field"; // Removed FieldControl, Added FieldError
 import { Input } from "~/components/ui/input";
+import { useMutation } from '@apollo/client/react';
+import { REGISTER_MUT } from '~/graphql/mutations/register';
 
 const registerFormSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
@@ -24,6 +25,9 @@ const registerFormSchema = z.object({
 export type RegisterFormSchema = z.infer<typeof registerFormSchema>;
 
 export function RegisterForm() {
+
+  const [register, { error, loading, data }] = useMutation(REGISTER_MUT);
+
   const form = useForm<RegisterFormSchema>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -32,10 +36,24 @@ export function RegisterForm() {
     },
   });
 
-  function onSubmit(values: RegisterFormSchema) {
-    console.log(values);
-    // Handle registration logic here
-  }
+  async function onSubmit(values: RegisterFormSchema) {
+    console.log('Submit:', values);
+
+
+    try {
+      const result = await register({
+        variables: {
+          username: values.email,
+          password: values.password,
+        },
+      });
+
+      console.log("Registered user:", data); // result.data.register.user
+      alert("Registration successful!");
+    } catch (err) {
+      console.error("Registration error:", err, error);
+    }
+  };
 
   return (
     <FormProvider {...form}>
@@ -81,7 +99,7 @@ export function RegisterForm() {
             )}
           </Field>        </FieldGroup>
         <div className="flex justify-center">
-          <Button type="submit" variant="outline" className="hover:bg-gray-700 hover:text-white">Submit</Button>
+          <Button type="submit" disabled={loading} variant="outline" className="hover:bg-gray-700 hover:text-white">Submit</Button>
         </div>
       </form>
     </FormProvider>
