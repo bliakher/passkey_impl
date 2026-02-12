@@ -12,6 +12,7 @@ type LoginPayload {
   accessTokenTTLSec: Float!
   refreshToken: String!
   refreshTokenTTLSec: Float!
+  user: User!
 }
 
 type Mutation {

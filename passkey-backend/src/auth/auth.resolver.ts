@@ -28,6 +28,10 @@ export class AuthResolver {
     const refreshToken = await this.authService.issueRefreshToken(newUser);
 
     return {
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+      },
       accessToken: accessToken,
       accessTokenTTLSec: 15 * 60,
       refreshToken: refreshToken,
@@ -53,6 +57,10 @@ export class AuthResolver {
     const refreshToken = await this.authService.issueRefreshToken(user);
 
     return {
+      user: {
+        id: user.id,
+        username: user.username,
+      },
       accessToken: accessToken,
       accessTokenTTLSec: 15 * 60,
       refreshToken: refreshToken,
