@@ -7,6 +7,7 @@ import { Field, FieldGroup, FieldLabel, FieldError } from "~/components/ui/field
 import { Input } from "~/components/ui/input";
 import { useMutation } from '@apollo/client/react';
 import { REGISTER_MUT } from '~/graphql/mutations/register';
+import { useNavigate } from 'react-router';
 
 const registerFormSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
@@ -27,19 +28,19 @@ export type RegisterFormSchema = z.infer<typeof registerFormSchema>;
 export function RegisterForm() {
 
   const [register, { error, loading, data }] = useMutation(REGISTER_MUT);
+  const navigate = useNavigate();
 
   const form = useForm<RegisterFormSchema>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
   async function onSubmit(values: RegisterFormSchema) {
     console.log('Submit:', values);
-
-
     try {
       const result = await register({
         variables: {
@@ -48,8 +49,9 @@ export function RegisterForm() {
         },
       });
 
-      console.log("Registered user:", data); // result.data.register.user
+      console.log("Registered user:", result.data);
       alert("Registration successful!");
+      navigate('/passkey');
     } catch (err) {
       console.error("Registration error:", err, error);
     }
@@ -99,7 +101,7 @@ export function RegisterForm() {
             )}
           </Field>        </FieldGroup>
         <div className="flex justify-center">
-          <Button type="submit" disabled={loading} variant="outline" className="hover:bg-gray-700 hover:text-white">Submit</Button>
+          <Button type="submit" disabled={loading} variant="outline" className="bg-gray-700 text-white hover:bg-gray-600">Submit</Button>
         </div>
       </form>
     </FormProvider>

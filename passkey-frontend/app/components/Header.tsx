@@ -23,7 +23,7 @@ export function Header() {
             </Button>
           </Link>
           <Link to="/register">
-            <Button variant="outline" className="hover:bg-gray-100 hover:text-gray-900">
+            <Button variant="outline" className="text-gray-900 hover:bg-gray-200">
               Register
             </Button>
           </Link>

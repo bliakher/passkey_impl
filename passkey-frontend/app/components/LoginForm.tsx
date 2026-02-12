@@ -79,7 +79,7 @@ export function LoginForm() {
                     </Field>
                 </FieldGroup>
                 <div className="flex justify-center">
-                    <Button type="submit" disabled={loading} variant="outline" className="hover:bg-gray-700 hover:text-white">Submit</Button>
+                    <Button type="submit" disabled={loading} variant="outline" className="bg-gray-700 text-white hover:bg-gray-600">Submit</Button>
                 </div>
             </form>
         </FormProvider>
