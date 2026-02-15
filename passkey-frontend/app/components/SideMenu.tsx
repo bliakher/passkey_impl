@@ -31,8 +31,13 @@ export function SideMenu({ isAuthenticated, onLogout }: SideMenuProps) {
         </SheetHeader>
         <div className="flex flex-col space-y-2 mt-4">
           <Link to="/" onClick={() => setOpen(false)} className="block py-3 px-4 text-white text-lg hover:bg-gray-700 rounded-md">
-            About
+            Home
           </Link>
+          {isAuthenticated && (
+            <Link to="/profile" onClick={() => setOpen(false)} className="block py-3 px-4 text-white text-lg hover:bg-gray-700 rounded-md">
+              Profile
+            </Link>
+          )}
         </div>
         <hr className="my-4 border-gray-600" />
         <div className="flex flex-col space-y-2">

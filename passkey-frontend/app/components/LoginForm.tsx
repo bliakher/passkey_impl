@@ -50,7 +50,7 @@ export function LoginForm() {
 
                 console.log("Logged in user:", user);
                 alert("Login successful!");
-                navigate('/');
+                navigate('/profile');
             }
         } catch (err) {
             console.error("Login error:", err, error);

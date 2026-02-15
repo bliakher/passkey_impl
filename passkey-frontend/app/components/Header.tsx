@@ -3,23 +3,29 @@ import { Button } from "~/components/ui/button";
 import { Link, useNavigate } from 'react-router';
 import { SideMenu } from './SideMenu';
 import { getUser, logout } from '~/lib/auth';
+import { LogOut, User } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '~/components/ui/dropdown-menu';
 
 export function Header() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<{ id: string; username: string } | null>(null);
   const navigate = useNavigate();
+
+  const isAuthenticated = !!user;
 
   useEffect(() => {
     const handleAuthChange = () => {
-      const user = getUser();
-      setIsAuthenticated(!!user);
+      setUser(getUser());
     };
 
-    // Check auth state on mount
     handleAuthChange();
 
-    // Listen for auth state changes
     window.addEventListener('authChange', handleAuthChange);
-
     return () => window.removeEventListener('authChange', handleAuthChange);
   }, []);
 
@@ -39,11 +45,26 @@ export function Header() {
             <Button variant="ghost">About</Button>
           </Link>
         </div>
-        <div className="hidden md:flex items-center">
+        <div className="hidden md:flex items-center space-x-2">
           {isAuthenticated ? (
-            <Button onClick={handleLogout} variant="outline" className="text-gray-900 hover:bg-gray-200">
-              Logout
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-600 text-sm font-semibold uppercase hover:bg-gray-500 focus:outline-none">
+                  {user.username.charAt(0)}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <Link to="/login">
