@@ -1,13 +1,22 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { RegistrationOptionsDTO } from './models/registration-options.model';
-import { AuthService } from './auth.service';
+import {
+  RegistrationOptionsDTO,
+  RegistrationResult,
+} from './models/registration-options.model';
+import { AuthService } from './service/auth.service';
 import {
   LoginFailedError,
   RefreshTokenInvalidError,
-  UsernameAlreadyUsedError,
+  PasskeyRegistrationVerificationFailed,
 } from './errors/auth.errors';
 import { LoginPayload, RefreshPayload } from './models/login-payload.model';
 import { MutationResult } from './models/result.model';
+import type { RegistrationResponseJSON } from '@simplewebauthn/server';
+import { InvalidUsernameError } from './errors/user.errors';
+import GraphQLJSON from 'graphql-type-json';
+import { UseGuards } from '@nestjs/common';
+import { CurrentUser, GqlJwtAuthGuard } from './service/gql-auth-guard';
+import type { UserData } from './service/jwt-startegy';
 
 @Resolver()
 export class AuthResolver {
@@ -18,9 +27,9 @@ export class AuthResolver {
     @Args({ name: 'username', type: () => String }) username: string,
     @Args({ name: 'password', type: () => String }) password: string,
   ): Promise<LoginPayload> {
-    const existingUser = await this.authService.getUserByUsername(username);
+    const existingUser = await this.authService.getUserById(username);
     if (existingUser != null) {
-      throw new UsernameAlreadyUsedError();
+      throw new LoginFailedError();
     }
 
     const newUser = await this.authService.createUser(username, password);
@@ -44,7 +53,7 @@ export class AuthResolver {
     @Args({ name: 'username', type: () => String }) username: string,
     @Args({ name: 'password', type: () => String }) password: string,
   ): Promise<LoginPayload> {
-    const user = await this.authService.getUserByUsername(username);
+    const user = await this.authService.getUserById(username);
     if (!user) {
       throw new LoginFailedError();
     }
@@ -99,17 +108,15 @@ export class AuthResolver {
     };
   }
 
-  // TODO: verify authentication
+  @UseGuards(GqlJwtAuthGuard)
   @Mutation(() => RegistrationOptionsDTO)
-  async startPasskeyRegistration(
-    @Args({ name: 'username', type: () => String }) username: string,
-  ) {
-    const user = await this.authService.getUserByUsername(username);
-    if (user != null) {
-      throw new UsernameAlreadyUsedError();
+  async startPasskeyRegistration(@CurrentUser() userData: UserData) {
+    const user = await this.authService.getUserById(userData.userId);
+    if (user == null) {
+      throw new InvalidUsernameError();
     }
 
-    const options = await this.authService.initiateRegistration(username);
+    const options = await this.authService.startPasskeyRegistration(user.id);
 
     await this.authService.saveChallenge({
       challenge: options.challenge,
@@ -118,5 +125,31 @@ export class AuthResolver {
     });
 
     return options;
+  }
+
+  @UseGuards(GqlJwtAuthGuard)
+  @Mutation(() => RegistrationResult)
+  async finishPasskeyRegistration(
+    @CurrentUser() userData: UserData,
+    @Args({ name: 'registrationResponse', type: () => GraphQLJSON })
+    registrationResponse: RegistrationResponseJSON,
+  ) {
+    const user = await this.authService.getUserById(userData.userId);
+    if (user == null) {
+      throw new InvalidUsernameError();
+    }
+
+    const verifyRes =
+      await this.authService.verifyPasskeyRegistration(registrationResponse);
+    if (!verifyRes.verified) {
+      throw new PasskeyRegistrationVerificationFailed();
+    }
+
+    await this.authService.saveCredential({
+      userId: user.id,
+      id: verifyRes.registrationInfo.credential.id,
+      publicKey: verifyRes.registrationInfo.credential.publicKey,
+      counter: verifyRes.registrationInfo.credential.counter,
+    });
   }
 }

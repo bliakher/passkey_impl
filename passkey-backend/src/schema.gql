@@ -7,6 +7,11 @@ type AuthenticatorSelectionDTO {
   userVerification: RequiredLevel!
 }
 
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
 type LoginPayload {
   accessToken: String!
   accessTokenTTLSec: Float!
@@ -16,11 +21,12 @@ type LoginPayload {
 }
 
 type Mutation {
+  finishPasskeyRegistration(registrationResponse: JSON!): RegistrationResult!
   login(password: String!, username: String!): LoginPayload!
   logout(refreshToken: String!): MutationResult!
   refresh(refreshToken: String!): RefreshPayload!
   register(password: String!, username: String!): LoginPayload!
-  startPasskeyRegistration(username: String!): RegistrationOptionsDTO!
+  startPasskeyRegistration: RegistrationOptionsDTO!
 }
 
 type MutationResult {
@@ -48,6 +54,10 @@ type RegistrationOptionsDTO {
   pubKeyCredParams: [PublicKeyParamsDTO!]!
   rp: RpEntityDTO!
   timeout: Int!
+}
+
+type RegistrationResult {
+  ok: Boolean!
 }
 
 """Is option required as defined by WebAuthn"""

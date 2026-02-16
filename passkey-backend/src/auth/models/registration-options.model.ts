@@ -67,3 +67,9 @@ export class RegistrationOptionsDTO {
   @Field(() => Int)
   timeout: number;
 }
+
+@ObjectType()
+export class RegistrationResult {
+  @Field(() => Boolean)
+  ok: boolean;
+}

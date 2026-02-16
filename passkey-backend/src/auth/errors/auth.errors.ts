@@ -1,16 +1,5 @@
 import { GraphQLError } from 'graphql';
 
-export class UsernameAlreadyUsedError extends GraphQLError {
-  constructor() {
-    super('User with username already exists', {
-      extensions: {
-        code: 'USERNAME_ALREADY_USED',
-        http: { status: 400 },
-      },
-    });
-  }
-}
-
 export class LoginFailedError extends GraphQLError {
   constructor() {
     super('Username or password incorrect', {
@@ -27,6 +16,17 @@ export class RefreshTokenInvalidError extends GraphQLError {
     super('Refresh token invalid', {
       extensions: {
         code: 'REFRESH_INVALID',
+        http: { status: 400 },
+      },
+    });
+  }
+}
+
+export class PasskeyRegistrationVerificationFailed extends GraphQLError {
+  constructor() {
+    super('Passkey registration verification failed', {
+      extensions: {
+        code: 'PASSKEY_REG_FAILED',
         http: { status: 400 },
       },
     });

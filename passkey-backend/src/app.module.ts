@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+// import { GqlContext } from './auth/service/gql-auth-guard';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
       graphiql: true,
       autoSchemaFile: `${process.cwd()}/src/schema.gql`,
       sortSchema: true,
+      // context: ({ req }): GqlContext => ({ req }),
     }),
     // .env configuration
     ConfigModule.forRoot({

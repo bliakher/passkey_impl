@@ -5,21 +5,24 @@ import { User } from '@prisma/client';
 import {
   generateRegistrationOptions,
   GenerateRegistrationOptionsOpts,
+  RegistrationResponseJSON,
+  VerifiedRegistrationResponse,
+  verifyRegistrationResponse,
 } from '@simplewebauthn/server';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/service/user.service';
 
-enum UserRole {
+export enum UserRole {
   USER = 'USER',
 }
 
-interface AccessTokenPayload {
+export interface AccessTokenPayload {
   sub: string;
   username: string;
   role: UserRole;
 }
 
-interface RefreshTokenPayload {
+export interface RefreshTokenPayload {
   sub: string;
   tokenVersion: number;
 }
@@ -34,6 +37,10 @@ export class AuthService {
 
   async getUserByUsername(username: string): Promise<User | null> {
     return await this.usersService.getUser({ username });
+  }
+
+  async getUserById(id: string): Promise<User | null> {
+    return await this.usersService.getUser({ id });
   }
 
   async createUser(username: string, password: string): Promise<User> {
@@ -105,7 +112,7 @@ export class AuthService {
     });
   }
 
-  async initiateRegistration(
+  async startPasskeyRegistration(
     username: string,
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
     const opts: GenerateRegistrationOptionsOpts = {
@@ -116,20 +123,35 @@ export class AuthService {
       attestationType: 'none',
       authenticatorSelection: {
         residentKey: 'discouraged',
-        /**
-         * Wondering why user verification isn't required? See here:
-         *
-         * https://passkeys.dev/docs/use-cases/bootstrapping/#a-note-about-user-verification
-         */
         userVerification: 'preferred',
       },
-      /**
-       * Support the two most common algorithms: ES256, and RS256
-       */
       supportedAlgorithmIDs: [-7, -257],
     };
     const options = await generateRegistrationOptions(opts);
     return options;
+  }
+
+  async verifyPasskeyRegistration(
+    registrationResponse: RegistrationResponseJSON,
+  ): Promise<VerifiedRegistrationResponse> {
+    const result = await verifyRegistrationResponse({
+      response: registrationResponse,
+      expectedChallenge: '',
+      expectedOrigin: '',
+    });
+    return result;
+  }
+
+  async saveCredential(credData: CredentialData) {
+    await this.dbService.credential.create({
+      data: {
+        id: credData.id,
+        public_key: credData.publicKey,
+        user_id: credData.userId,
+        counter: credData.counter,
+        transports: '',
+      },
+    });
   }
 
   async saveChallenge(data: AuthChallengeData): Promise<void> {
@@ -141,6 +163,13 @@ export class AuthService {
       },
     });
   }
+}
+
+export interface CredentialData {
+  id: string;
+  userId: string;
+  publicKey: Uint8Array<ArrayBuffer>;
+  counter: number;
 }
 
 export interface AuthChallengeData {
