@@ -118,7 +118,10 @@ export class AuthResolver {
       throw new InvalidUsernameError();
     }
 
-    const options = await this.authService.startPasskeyRegistration(user.id);
+    const options = await this.authService.startPasskeyRegistration(
+      user.id,
+      user.username,
+    );
     console.log('registration options:', options);
 
     const challenge = await this.authService.saveChallenge({

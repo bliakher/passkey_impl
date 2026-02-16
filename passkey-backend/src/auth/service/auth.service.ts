@@ -114,12 +114,15 @@ export class AuthService {
   }
 
   async startPasskeyRegistration(
+    userId: string,
     username: string,
   ): Promise<PublicKeyCredentialCreationOptionsJSON> {
     const opts: GenerateRegistrationOptionsOpts = {
       rpName: 'Passkeys Test Implementation',
       rpID: 'localhost', //TODO: set up env variable
+      // userID: userId,
       userName: username,
+      userDisplayName: username,
       timeout: 60000,
       attestationType: 'none',
       authenticatorSelection: {
