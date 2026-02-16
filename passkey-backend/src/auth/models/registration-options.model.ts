@@ -52,6 +52,9 @@ export class UserEntityDTO {
 
 @ObjectType()
 export class RegistrationOptionsDTO {
+  @Field(() => String)
+  challengeId: string;
+
   @Field(() => AuthenticatorSelectionDTO)
   authenticatorSelection: AuthenticatorSelectionDTO;
 

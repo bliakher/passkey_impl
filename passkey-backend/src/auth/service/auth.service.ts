@@ -1,7 +1,8 @@
 import * as bcrypt from 'bcrypt';
+import moment from 'moment';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
+import { AuthChallenge, User } from '@prisma/client';
 import {
   generateRegistrationOptions,
   GenerateRegistrationOptionsOpts,
@@ -132,11 +133,13 @@ export class AuthService {
   }
 
   async verifyPasskeyRegistration(
+    challenge: AuthChallenge,
     registrationResponse: RegistrationResponseJSON,
   ): Promise<VerifiedRegistrationResponse> {
     const result = await verifyRegistrationResponse({
       response: registrationResponse,
-      expectedChallenge: '',
+      expectedChallenge: challenge.challenge,
+      expectedType: 'webauthn.create',
       expectedOrigin: '',
     });
     return result;
@@ -155,14 +158,26 @@ export class AuthService {
     });
   }
 
-  async saveChallenge(data: AuthChallengeData): Promise<void> {
-    await this.dbService.authChallenge.create({
+  async saveChallenge(data: AuthChallengeData): Promise<AuthChallenge> {
+    const expires = moment().add(5, 'minutes').toDate();
+    return await this.dbService.authChallenge.create({
       data: {
         challenge: data.challenge,
         user_id: data.userId,
         username: data.username,
+        expires_at: expires,
       },
     });
+  }
+
+  async getChallenge(id: string): Promise<AuthChallenge | null> {
+    const challenge = await this.dbService.authChallenge.findUnique({
+      where: { id },
+    });
+    // check expiration date
+    if (challenge == null || challenge.expires_at > new Date()) return null;
+
+    return challenge;
   }
 }
 

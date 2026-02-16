@@ -32,3 +32,14 @@ export class PasskeyRegistrationVerificationFailed extends GraphQLError {
     });
   }
 }
+
+export class InvalidChallengeError extends GraphQLError {
+  constructor() {
+    super('Challenge is invalid', {
+      extensions: {
+        code: 'INVALID_CHALLENGE',
+        http: { status: 400 },
+      },
+    });
+  }
+}

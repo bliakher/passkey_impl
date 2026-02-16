@@ -8,6 +8,7 @@ import {
   LoginFailedError,
   RefreshTokenInvalidError,
   PasskeyRegistrationVerificationFailed,
+  InvalidChallengeError,
 } from './errors/auth.errors';
 import { LoginPayload, RefreshPayload } from './models/login-payload.model';
 import { MutationResult } from './models/result.model';
@@ -118,13 +119,16 @@ export class AuthResolver {
 
     const options = await this.authService.startPasskeyRegistration(user.id);
 
-    await this.authService.saveChallenge({
+    const challenge = await this.authService.saveChallenge({
       challenge: options.challenge,
       userId: options.user.id,
       username: options.user.name,
     });
 
-    return options;
+    return {
+      challengeId: challenge.id,
+      ...options,
+    };
   }
 
   @UseGuards(GqlJwtAuthGuard)
@@ -133,6 +137,8 @@ export class AuthResolver {
     @CurrentUser() userData: UserData,
     @Args({ name: 'registrationResponse', type: () => GraphQLJSON })
     registrationResponse: RegistrationResponseJSON,
+    @Args({ name: 'challengeId', type: () => String })
+    challengeId: string,
     @Args({ name: 'device', type: () => String })
     device: string,
   ) {
@@ -140,9 +146,14 @@ export class AuthResolver {
     if (user == null) {
       throw new InvalidUsernameError();
     }
-
-    const verifyRes =
-      await this.authService.verifyPasskeyRegistration(registrationResponse);
+    const challenge = await this.authService.getChallenge(challengeId);
+    if (challenge == null) {
+      throw new InvalidChallengeError();
+    }
+    const verifyRes = await this.authService.verifyPasskeyRegistration(
+      challenge,
+      registrationResponse,
+    );
     if (!verifyRes.verified) {
       throw new PasskeyRegistrationVerificationFailed();
     }

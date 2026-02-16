@@ -21,7 +21,7 @@ type LoginPayload {
 }
 
 type Mutation {
-  finishPasskeyRegistration(device: String!, registrationResponse: JSON!): RegistrationResult!
+  finishPasskeyRegistration(challengeId: String!, device: String!, registrationResponse: JSON!): RegistrationResult!
   login(password: String!, username: String!): LoginPayload!
   logout(refreshToken: String!): MutationResult!
   refresh(refreshToken: String!): RefreshPayload!
@@ -51,6 +51,7 @@ type RefreshPayload {
 type RegistrationOptionsDTO {
   authenticatorSelection: AuthenticatorSelectionDTO!
   challenge: String!
+  challengeId: String!
   pubKeyCredParams: [PublicKeyParamsDTO!]!
   rp: RpEntityDTO!
   timeout: Int!
