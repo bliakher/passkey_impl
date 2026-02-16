@@ -133,6 +133,8 @@ export class AuthResolver {
     @CurrentUser() userData: UserData,
     @Args({ name: 'registrationResponse', type: () => GraphQLJSON })
     registrationResponse: RegistrationResponseJSON,
+    @Args({ name: 'device', type: () => String })
+    device: string,
   ) {
     const user = await this.authService.getUserById(userData.userId);
     if (user == null) {
@@ -150,6 +152,7 @@ export class AuthResolver {
       id: verifyRes.registrationInfo.credential.id,
       publicKey: verifyRes.registrationInfo.credential.publicKey,
       counter: verifyRes.registrationInfo.credential.counter,
+      device,
     });
   }
 }

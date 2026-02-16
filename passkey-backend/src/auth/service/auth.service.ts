@@ -150,6 +150,7 @@ export class AuthService {
         user_id: credData.userId,
         counter: credData.counter,
         transports: '',
+        device: credData.device,
       },
     });
   }
@@ -170,6 +171,7 @@ export interface CredentialData {
   userId: string;
   publicKey: Uint8Array<ArrayBuffer>;
   counter: number;
+  device?: string;
 }
 
 export interface AuthChallengeData {

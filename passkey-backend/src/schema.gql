@@ -21,7 +21,7 @@ type LoginPayload {
 }
 
 type Mutation {
-  finishPasskeyRegistration(registrationResponse: JSON!): RegistrationResult!
+  finishPasskeyRegistration(device: String!, registrationResponse: JSON!): RegistrationResult!
   login(password: String!, username: String!): LoginPayload!
   logout(refreshToken: String!): MutationResult!
   refresh(refreshToken: String!): RefreshPayload!
