@@ -136,11 +136,15 @@ export class AuthService {
     challenge: AuthChallenge,
     registrationResponse: RegistrationResponseJSON,
   ): Promise<VerifiedRegistrationResponse> {
+    const origin = process.env.FRONTEND_URL;
+    if (!origin) {
+      throw new Error('Frontend origin missing from config');
+    }
     const result = await verifyRegistrationResponse({
       response: registrationResponse,
       expectedChallenge: challenge.challenge,
       expectedType: 'webauthn.create',
-      expectedOrigin: '',
+      expectedOrigin: origin,
     });
     return result;
   }
