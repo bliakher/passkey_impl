@@ -35,7 +35,7 @@ type MutationResult {
 
 type PublicKeyParamsDTO {
   alg: String!
-  type: Int!
+  type: String!
 }
 
 type Query {
@@ -55,6 +55,7 @@ type RegistrationOptionsDTO {
   pubKeyCredParams: [PublicKeyParamsDTO!]!
   rp: RpEntityDTO!
   timeout: Int!
+  user: UserEntityDTO!
 }
 
 type RegistrationResult {
@@ -76,4 +77,10 @@ type RpEntityDTO {
 type User {
   id: ID!
   username: String!
+}
+
+type UserEntityDTO {
+  displayName: String!
+  id: String!
+  name: String!
 }

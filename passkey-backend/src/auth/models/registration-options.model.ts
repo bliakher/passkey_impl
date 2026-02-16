@@ -34,7 +34,7 @@ export class PublicKeyParamsDTO {
   @Field(() => String)
   alg: number;
 
-  @Field(() => Int)
+  @Field(() => String)
   type: string;
 }
 
@@ -55,20 +55,23 @@ export class RegistrationOptionsDTO {
   @Field(() => String)
   challengeId: string;
 
-  @Field(() => AuthenticatorSelectionDTO)
-  authenticatorSelection: AuthenticatorSelectionDTO;
-
   @Field(() => String)
   challenge: string;
-
-  @Field(() => [PublicKeyParamsDTO])
-  pubKeyCredParams: PublicKeyParamsDTO[];
 
   @Field(() => RpEntityDTO)
   rp: RpEntityDTO;
 
+  @Field(() => UserEntityDTO)
+  user: UserEntityDTO;
+
   @Field(() => Int)
   timeout: number;
+
+  @Field(() => AuthenticatorSelectionDTO)
+  authenticatorSelection: AuthenticatorSelectionDTO;
+
+  @Field(() => [PublicKeyParamsDTO])
+  pubKeyCredParams: PublicKeyParamsDTO[];
 }
 
 @ObjectType()

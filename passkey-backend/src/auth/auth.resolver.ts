@@ -119,6 +119,7 @@ export class AuthResolver {
     }
 
     const options = await this.authService.startPasskeyRegistration(user.id);
+    console.log('registration options:', options);
 
     const challenge = await this.authService.saveChallenge({
       challenge: options.challenge,
