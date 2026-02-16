@@ -174,8 +174,9 @@ export class AuthService {
     const challenge = await this.dbService.authChallenge.findUnique({
       where: { id },
     });
+    console.log('challenge:', challenge, 'date:', new Date());
     // check expiration date
-    if (challenge == null || challenge.expires_at > new Date()) return null;
+    if (challenge == null || challenge.expires_at < new Date()) return null;
 
     return challenge;
   }
