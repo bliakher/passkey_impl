@@ -5,17 +5,30 @@ import { Button } from '~/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '~/components/ui/card';
 import { ShieldCheck, KeyRound } from 'lucide-react';
 import { START_PASSKEY_REGISTRATION_MUT } from '~/graphql/mutations/startPasskeyRegistration';
+import { FINISH_PASSKEY_REGISTRATION_MUT } from '~/graphql/mutations/finishPasskeyRegistration';
 
 export default function SuggestPasskey() {
   const navigate = useNavigate();
-  const [requestRegistrationOptions, { loading }] = useMutation(START_PASSKEY_REGISTRATION_MUT);
+  const [requestRegistrationOptions, { loading: startLoading }] = useMutation(START_PASSKEY_REGISTRATION_MUT);
+  const [finishRegistration, { loading: finishLoading }] = useMutation(FINISH_PASSKEY_REGISTRATION_MUT);
+
+  const loading = startLoading || finishLoading;
 
   async function handleRegisterPasskey() {
     try {
       const result = await requestRegistrationOptions();
       if (result.data?.startPasskeyRegistration) {
-        const credential = await startRegistration({ optionsJSON: result.data.startPasskeyRegistration as PublicKeyCredentialCreationOptionsJSON });
-        console.log('Created credential:', credential);
+        const { challengeId, ...optionsJSON } = result.data.startPasskeyRegistration;
+        const credential = await startRegistration({ optionsJSON: optionsJSON as PublicKeyCredentialCreationOptionsJSON });
+
+        const finishResult = await finishRegistration({
+          variables: {
+            challengeId,
+            device: navigator.userAgent,
+            registrationResponse: credential as unknown as Record<string, unknown>,
+          },
+        });
+        console.log('Registration finished:', finishResult.data?.finishPasskeyRegistration);
       }
     } catch (err) {
       console.error('Failed to start passkey registration:', err);
