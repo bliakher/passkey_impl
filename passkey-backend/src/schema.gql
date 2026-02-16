@@ -34,7 +34,7 @@ type MutationResult {
 }
 
 type PublicKeyParamsDTO {
-  alg: String!
+  alg: Int!
   type: String!
 }
 

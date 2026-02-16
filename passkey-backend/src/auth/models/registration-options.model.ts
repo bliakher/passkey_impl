@@ -31,7 +31,7 @@ export class AuthenticatorSelectionDTO {
 
 @ObjectType()
 export class PublicKeyParamsDTO {
-  @Field(() => String)
+  @Field(() => Int)
   alg: number;
 
   @Field(() => String)
