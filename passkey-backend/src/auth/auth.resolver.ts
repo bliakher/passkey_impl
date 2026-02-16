@@ -143,7 +143,7 @@ export class AuthResolver {
     challengeId: string,
     @Args({ name: 'device', type: () => String })
     device: string,
-  ) {
+  ): Promise<RegistrationResult> {
     const user = await this.authService.getUserById(userData.userId);
     if (user == null) {
       throw new InvalidUsernameError();
@@ -167,5 +167,9 @@ export class AuthResolver {
       counter: verifyRes.registrationInfo.credential.counter,
       device,
     });
+
+    return {
+      ok: true,
+    };
   }
 }
