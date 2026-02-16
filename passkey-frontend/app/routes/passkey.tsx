@@ -1,10 +1,26 @@
 import { useNavigate } from 'react-router';
+import { useMutation } from '@apollo/client/react';
+import { startRegistration, type PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/browser';
 import { Button } from '~/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '~/components/ui/card';
 import { ShieldCheck, KeyRound } from 'lucide-react';
+import { START_PASSKEY_REGISTRATION_MUT } from '~/graphql/mutations/startPasskeyRegistration';
 
 export default function SuggestPasskey() {
   const navigate = useNavigate();
+  const [requestRegistrationOptions, { loading }] = useMutation(START_PASSKEY_REGISTRATION_MUT);
+
+  async function handleRegisterPasskey() {
+    try {
+      const result = await requestRegistrationOptions();
+      if (result.data?.startPasskeyRegistration) {
+        const credential = await startRegistration({ optionsJSON: result.data.startPasskeyRegistration as PublicKeyCredentialCreationOptionsJSON });
+        console.log('Created credential:', credential);
+      }
+    } catch (err) {
+      console.error('Failed to start passkey registration:', err);
+    }
+  }
 
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
@@ -19,9 +35,13 @@ export default function SuggestPasskey() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button className="w-full bg-white text-gray-900 hover:bg-gray-200 font-semibold">
+          <Button
+            className="w-full bg-white text-gray-900 hover:bg-gray-200 font-semibold"
+            onClick={handleRegisterPasskey}
+            disabled={loading}
+          >
             <KeyRound className="mr-2 h-5 w-5" />
-            Register a passkey
+            {loading ? 'Registering…' : 'Register a passkey'}
           </Button>
         </CardContent>
         <CardFooter className="justify-center">
