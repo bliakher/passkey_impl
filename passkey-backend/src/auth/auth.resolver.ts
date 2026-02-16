@@ -28,7 +28,8 @@ export class AuthResolver {
     @Args({ name: 'username', type: () => String }) username: string,
     @Args({ name: 'password', type: () => String }) password: string,
   ): Promise<LoginPayload> {
-    const existingUser = await this.authService.getUserById(username);
+    const existingUser = await this.authService.getUserByUsername(username);
+    console.log('registration - existing user:', existingUser);
     if (existingUser != null) {
       throw new LoginFailedError();
     }
@@ -54,7 +55,7 @@ export class AuthResolver {
     @Args({ name: 'username', type: () => String }) username: string,
     @Args({ name: 'password', type: () => String }) password: string,
   ): Promise<LoginPayload> {
-    const user = await this.authService.getUserById(username);
+    const user = await this.authService.getUserByUsername(username);
     if (!user) {
       throw new LoginFailedError();
     }
