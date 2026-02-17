@@ -43,3 +43,14 @@ export class InvalidChallengeError extends GraphQLError {
     });
   }
 }
+
+export class InvalidCredentialIdError extends GraphQLError {
+  constructor() {
+    super('Credential ID is invalid', {
+      extensions: {
+        code: 'INVALID_CREDENTIAL',
+        http: { status: 400 },
+      },
+    });
+  }
+}

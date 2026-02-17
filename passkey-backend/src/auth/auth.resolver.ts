@@ -10,13 +10,17 @@ import {
   RefreshTokenInvalidError,
   PasskeyRegistrationVerificationFailed,
   InvalidChallengeError,
+  InvalidCredentialIdError,
 } from './errors/auth.errors';
 import { LoginPayload, RefreshPayload } from './models/login-payload.model';
 import { MutationResult } from './models/result.model';
-import type { RegistrationResponseJSON } from '@simplewebauthn/server';
+import type {
+  AuthenticationResponseJSON,
+  RegistrationResponseJSON,
+} from '@simplewebauthn/server';
 import { InvalidUsernameError } from './errors/user.errors';
 import GraphQLJSON from 'graphql-type-json';
-import { UseGuards } from '@nestjs/common';
+import { InternalServerErrorException, UseGuards } from '@nestjs/common';
 import { CurrentUser, GqlJwtAuthGuard } from './service/gql-auth-guard';
 import type { UserData } from './service/jwt-startegy';
 
@@ -194,8 +198,47 @@ export class AuthResolver {
     return options;
   }
 
-  @Mutation(() => SuccessResult)
-  finishPasskeyAuthentication() {
-    return { ok: true };
+  @Mutation(() => LoginPayload)
+  async finishPasskeyAuthentication(
+    @Args({ name: 'challengeId', type: () => String }) challengeId: string,
+    @Args({ name: 'authenticationResponse', type: () => GraphQLJSON })
+    authenticationResponse: AuthenticationResponseJSON,
+  ) {
+    const challenge = await this.authService.getChallenge(challengeId);
+    if (challenge == null) {
+      throw new InvalidChallengeError();
+    }
+    const credentialId = authenticationResponse.id;
+    const credential = await this.authService.getCredentialById(credentialId);
+    if (credential == null) {
+      throw new InvalidCredentialIdError();
+    }
+    const result = await this.authService.verifyPasskeyAuthentication(
+      challenge,
+      credential,
+      authenticationResponse,
+    );
+    if (!result.verified) {
+      throw new LoginFailedError();
+    }
+    const user = await this.authService.getUserById(credential.user_id);
+    if (user == null) {
+      throw new InternalServerErrorException(
+        'Credential connected to unknown user ID',
+      );
+    }
+    const accessToken = await this.authService.issueAccessToken(user);
+    const refreshToken = await this.authService.issueRefreshToken(user);
+
+    return {
+      user: {
+        id: user.id,
+        username: user.username,
+      },
+      accessToken: accessToken,
+      accessTokenTTLSec: 15 * 60,
+      refreshToken: refreshToken,
+      refreshTokenTTLSec: 7 * 24 * 60 * 60,
+    };
   }
 }

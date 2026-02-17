@@ -8,8 +8,10 @@ import {
   generateRegistrationOptions,
   GenerateRegistrationOptionsOpts,
   RegistrationResponseJSON,
+  AuthenticationResponseJSON,
   VerifiedRegistrationResponse,
   verifyRegistrationResponse,
+  verifyAuthenticationResponse,
 } from '@simplewebauthn/server';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/service/user.service';
@@ -54,6 +56,17 @@ export class AuthService {
     return await this.usersService.createUser({
       username,
       password: hash,
+    });
+  }
+
+  async getCredentialById(id: string): Promise<Credential | null> {
+    return await this.dbService.credential.findUnique({ where: { id } });
+  }
+
+  async incrementCredentialCounter(id: string) {
+    return await this.dbService.credential.update({
+      where: { id },
+      data: { counter: { increment: 1 } },
     });
   }
 
@@ -171,6 +184,32 @@ export class AuthService {
       allowCredentials: allowCred,
     });
     return options;
+  }
+
+  async verifyPasskeyAuthentication(
+    challenge: AuthChallenge,
+    credential: Credential,
+    authResponse: AuthenticationResponseJSON,
+  ) {
+    const origin = process.env.FRONTEND_URL;
+    if (!origin) {
+      throw new Error('Frontend origin missing from config');
+    }
+    const result = await verifyAuthenticationResponse({
+      response: authResponse,
+      expectedChallenge: challenge.challenge,
+      expectedOrigin: origin,
+      expectedRPID: '',
+      expectedType: 'webauthn.get',
+      credential: {
+        id: credential.id,
+        publicKey: credential.public_key,
+        counter: credential.counter,
+      },
+    });
+    // increment counter after every login - replay attack
+    await this.incrementCredentialCounter(credential.id);
+    return result;
   }
 
   async saveCredential(credData: CredentialData) {
