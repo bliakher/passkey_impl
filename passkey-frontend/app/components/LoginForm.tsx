@@ -59,7 +59,7 @@ export function LoginForm() {
 
     return (
         <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-96 p-6 bg-gray-800 text-white rounded-lg shadow-md">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-96 bg-gray-800 text-white rounded-lg shadow-md">
                 <FieldGroup>
                     <Field data-invalid={!!form.formState.errors.email}>
                         <FieldLabel>Email</FieldLabel>
