@@ -2,9 +2,23 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AuthenticationOptionsDTO {
+  allowCredentials: [CredentialDTO!]!
+  challenge: String!
+  rpId: String!
+  timeout: Int!
+  userVerification: RequiredLevel!
+}
+
 type AuthenticatorSelectionDTO {
   residentKey: RequiredLevel!
   userVerification: RequiredLevel!
+}
+
+type CredentialDTO {
+  id: String!
+  transports: [String!]!
+  type: String!
 }
 
 """
@@ -21,11 +35,13 @@ type LoginPayload {
 }
 
 type Mutation {
-  finishPasskeyRegistration(challengeId: String!, device: String!, registrationResponse: JSON!): RegistrationResult!
+  finishPasskeyAuthentication: SuccessResult!
+  finishPasskeyRegistration(challengeId: String!, device: String!, registrationResponse: JSON!): SuccessResult!
   login(password: String!, username: String!): LoginPayload!
   logout(refreshToken: String!): MutationResult!
   refresh(refreshToken: String!): RefreshPayload!
   register(password: String!, username: String!): LoginPayload!
+  startPasskeyAuthentication(username: String!): AuthenticationOptionsDTO!
   startPasskeyRegistration: RegistrationOptionsDTO!
 }
 
@@ -58,10 +74,6 @@ type RegistrationOptionsDTO {
   user: UserEntityDTO!
 }
 
-type RegistrationResult {
-  ok: Boolean!
-}
-
 """Is option required as defined by WebAuthn"""
 enum RequiredLevel {
   Discouraged
@@ -72,6 +84,10 @@ enum RequiredLevel {
 type RpEntityDTO {
   id: String!
   name: String!
+}
+
+type SuccessResult {
+  ok: Boolean!
 }
 
 type User {

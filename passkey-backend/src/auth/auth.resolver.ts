@@ -1,7 +1,8 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import {
+  AuthenticationOptionsDTO,
   RegistrationOptionsDTO,
-  RegistrationResult,
+  SuccessResult,
 } from './models/registration-options.model';
 import { AuthService } from './service/auth.service';
 import {
@@ -137,7 +138,7 @@ export class AuthResolver {
   }
 
   @UseGuards(GqlJwtAuthGuard)
-  @Mutation(() => RegistrationResult)
+  @Mutation(() => SuccessResult)
   async finishPasskeyRegistration(
     @CurrentUser() userData: UserData,
     @Args({ name: 'registrationResponse', type: () => GraphQLJSON })
@@ -146,7 +147,7 @@ export class AuthResolver {
     challengeId: string,
     @Args({ name: 'device', type: () => String })
     device: string,
-  ): Promise<RegistrationResult> {
+  ): Promise<SuccessResult> {
     const user = await this.authService.getUserById(userData.userId);
     if (user == null) {
       throw new InvalidUsernameError();
@@ -174,5 +175,27 @@ export class AuthResolver {
     return {
       ok: true,
     };
+  }
+
+  @Mutation(() => AuthenticationOptionsDTO)
+  async startPasskeyAuthentication(
+    @Args({ name: 'username', type: () => String }) username: string,
+  ) {
+    const user = await this.authService.getUserWithCredentials(username);
+    if (!user) {
+      throw new LoginFailedError();
+    }
+    console.log(user.credentials);
+    //TODO: save transports correctly
+    const options = await this.authService.startPasskeyAuthentication(
+      user.credentials,
+    );
+    console.log('Passkey authentication options:', options);
+    return options;
+  }
+
+  @Mutation(() => SuccessResult)
+  finishPasskeyAuthentication() {
+    return { ok: true };
   }
 }

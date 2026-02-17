@@ -9,8 +9,15 @@ export class UsersService {
   async getUser(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
   ): Promise<User | null> {
-    return this.prisma.user.findUnique({
+    return await this.prisma.user.findUnique({
       where: userWhereUniqueInput,
+    });
+  }
+
+  async getUserWithCredentials(username: string) {
+    return await this.prisma.user.findUnique({
+      where: { username },
+      include: { credentials: true },
     });
   }
 

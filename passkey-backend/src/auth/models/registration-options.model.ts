@@ -51,6 +51,18 @@ export class UserEntityDTO {
 }
 
 @ObjectType()
+export class CredentialDTO {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => [String])
+  transports?: string[];
+
+  @Field(() => String)
+  type: string;
+}
+
+@ObjectType()
 export class RegistrationOptionsDTO {
   @Field(() => String)
   challengeId: string;
@@ -75,7 +87,25 @@ export class RegistrationOptionsDTO {
 }
 
 @ObjectType()
-export class RegistrationResult {
+export class SuccessResult {
   @Field(() => Boolean)
   ok: boolean;
+}
+
+@ObjectType()
+export class AuthenticationOptionsDTO {
+  @Field(() => String)
+  rpId: string;
+
+  @Field(() => String)
+  challenge: string;
+
+  @Field(() => [CredentialDTO])
+  allowCredentials: CredentialDTO[];
+
+  @Field(() => Int)
+  timeout: number;
+
+  @Field(() => RequiredLevel)
+  userVerification: RequiredLevel;
 }

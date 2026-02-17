@@ -2,8 +2,9 @@ import * as bcrypt from 'bcrypt';
 import moment from 'moment';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthChallenge, User } from '@prisma/client';
+import { AuthChallenge, Credential, User } from '@prisma/client';
 import {
+  generateAuthenticationOptions,
   generateRegistrationOptions,
   GenerateRegistrationOptionsOpts,
   RegistrationResponseJSON,
@@ -42,6 +43,10 @@ export class AuthService {
 
   async getUserById(id: string): Promise<User | null> {
     return await this.usersService.getUser({ id });
+  }
+
+  async getUserWithCredentials(username: string) {
+    return await this.usersService.getUserWithCredentials(username);
   }
 
   async createUser(username: string, password: string): Promise<User> {
@@ -150,6 +155,22 @@ export class AuthService {
       expectedOrigin: origin,
     });
     return result;
+  }
+
+  async startPasskeyAuthentication(credentials: Credential[]) {
+    const allowCred = credentials.map((cred) => ({
+      id: cred.id,
+      transports: Array.isArray(cred.transports)
+        ? cred.transports.filter(
+            (t): t is AuthenticatorTransport => typeof t === 'string',
+          )
+        : undefined,
+    }));
+    const options = await generateAuthenticationOptions({
+      rpID: 'localhost',
+      allowCredentials: allowCred,
+    });
+    return options;
   }
 
   async saveCredential(credData: CredentialData) {
