@@ -1,9 +1,6 @@
-import React from 'react';
 import { Link } from 'react-router';
 import { LoginForm } from '~/components/LoginForm';
 import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card';
-import { Button } from '~/components/ui/button';
-import { KeyRound } from 'lucide-react';
 
 export default function LoginPage() {
   return (
@@ -14,21 +11,6 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="p-10">
           <LoginForm />
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-500" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-gray-800 px-2 text-gray-400">or</span>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            className="w-full bg-transparent border-gray-500 text-white hover:bg-gray-700"
-          >
-            <KeyRound className="h-5 w-5" />
-            Continue with Passkeys
-          </Button>
         </CardContent>
       </Card>
       <p className="mt-4 text-sm text-gray-400">

@@ -25,7 +25,7 @@ export function SideMenu({ isAuthenticated, onLogout }: SideMenuProps) {
           <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="bg-gray-800 text-white">
+      <SheetContent side="right" className="bg-gray-800 text-white" aria-describedby={undefined}>
         <SheetHeader>
           <SheetTitle className="text-white text-2xl">Navigation</SheetTitle>
         </SheetHeader>

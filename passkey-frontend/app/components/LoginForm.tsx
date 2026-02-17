@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { z } from 'zod';
 import { useForm, FormProvider, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { KeyRound } from 'lucide-react';
 
 import { Button } from "~/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldError } from "~/components/ui/field";
@@ -17,9 +19,22 @@ const loginFormSchema = z.object({
 
 export type LoginFormSchema = z.infer<typeof loginFormSchema>;
 
-export function LoginForm() {
+function Divider({ label }: { label: string }) {
+    return (
+        <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-500" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+                <span className="bg-gray-800 px-2 text-gray-400">{label}</span>
+            </div>
+        </div>
+    );
+}
 
-    const [login, { error, loading, data }] = useMutation(LOGIN_MUT);
+export function LoginForm() {
+    const [mode, setMode] = useState<'passkey' | 'password'>('passkey');
+    const [login, { error, loading }] = useMutation(LOGIN_MUT);
     const navigate = useNavigate();
 
     const form = useForm<LoginFormSchema>({
@@ -44,7 +59,6 @@ export function LoginForm() {
             if (result.data?.login) {
                 const { accessToken, refreshToken, user } = result.data.login;
 
-                // Store tokens and user data
                 saveTokens(accessToken, refreshToken);
                 saveUser(user);
 
@@ -56,6 +70,45 @@ export function LoginForm() {
             console.error("Login error:", err, error);
         }
     };
+
+    if (mode === 'passkey') {
+        return (
+            <FormProvider {...form}>
+                <div className="space-y-8 w-96 bg-gray-800 text-white rounded-lg shadow-md">
+                    <FieldGroup>
+                        <Field data-invalid={!!form.formState.errors.email}>
+                            <FieldLabel>Email</FieldLabel>
+                            <Controller
+                                control={form.control}
+                                name="email"
+                                render={({ fieldState, field }) => (
+                                    <Input placeholder="email@example.com" {...field} aria-invalid={fieldState.invalid} />
+                                )}
+                            />
+                            {form.formState.errors.email && (
+                                <FieldError errors={[form.formState.errors.email]} />
+                            )}
+                        </Field>
+                    </FieldGroup>
+                    <Button
+                        variant="outline"
+                        className="w-full bg-transparent border-gray-500 text-white hover:bg-gray-700"
+                    >
+                        <KeyRound className="h-5 w-5" />
+                        Continue with Passkeys
+                    </Button>
+                    <Divider label="or" />
+                    <Button
+                        variant="outline"
+                        className="w-full bg-transparent border-gray-500 text-white hover:bg-gray-700"
+                        onClick={() => setMode('password')}
+                    >
+                        Log in with password
+                    </Button>
+                </div>
+            </FormProvider>
+        );
+    }
 
     return (
         <FormProvider {...form}>
