@@ -12,6 +12,7 @@ import { Input } from "~/components/ui/input";
 import { useMutation } from '@apollo/client/react';
 import { LOGIN_MUT } from '~/graphql/mutations/login';
 import { START_PASSKEY_AUTHENTICATION_MUT } from '~/graphql/mutations/startPasskeyAuthentication';
+import { FINISH_PASSKEY_AUTHENTICATION_MUT } from '~/graphql/mutations/finishPasskeyAuthentication';
 import { useNavigate } from 'react-router';
 import { saveTokens, saveUser } from '~/lib/auth';
 
@@ -39,6 +40,7 @@ export function LoginForm() {
     const [mode, setMode] = useState<'passkey' | 'password'>('passkey');
     const [login, { error, loading }] = useMutation(LOGIN_MUT);
     const [startPasskeyAuth] = useMutation(START_PASSKEY_AUTHENTICATION_MUT);
+    const [finishPasskeyAuth] = useMutation(FINISH_PASSKEY_AUTHENTICATION_MUT);
     const navigate = useNavigate();
 
     const form = useForm<LoginFormSchema>({
@@ -64,9 +66,22 @@ export function LoginForm() {
                 setMode('password');
                 return;
             }
-            const optionsJSON = result.data!.startPasskeyAuthentication;
+            const { challengeId, ...optionsJSON } = result.data!.startPasskeyAuthentication;
             const credential = await startAuthentication({ optionsJSON: optionsJSON as PublicKeyCredentialRequestOptionsJSON });
-            console.log('Authentication credential:', credential);
+
+            const finishResult = await finishPasskeyAuth({
+                variables: {
+                    challengeId,
+                    authenticationResponse: credential as unknown as Record<string, unknown>,
+                },
+            });
+
+            if (finishResult.data?.finishPasskeyAuthentication) {
+                const { accessToken, refreshToken, user } = finishResult.data.finishPasskeyAuthentication;
+                saveTokens(accessToken, refreshToken);
+                saveUser(user);
+                navigate('/profile');
+            }
         } catch (err) {
             console.error('Passkey auth error:', err);
         }

@@ -8,6 +8,7 @@ type CredentialDTO = {
 
 type StartPasskeyAuthenticationData = {
   startPasskeyAuthentication: {
+    challengeId: string;
     allowCredentials: CredentialDTO[];
     challenge: string;
     rpId: string;
@@ -26,6 +27,7 @@ export const START_PASSKEY_AUTHENTICATION_MUT: TypedDocumentNode<
 > = gql`
   mutation StartPasskeyAuthentication($username: String!) {
     startPasskeyAuthentication(username: $username) {
+      challengeId
       allowCredentials {
         id
         transports
