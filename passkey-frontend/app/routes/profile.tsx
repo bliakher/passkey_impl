@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client/react';
 import { getUser } from '~/lib/auth';
+import { USER_QUERY } from '~/graphql/queries/user';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '~/components/ui/card';
 import { PasskeyTable } from '~/components/PasskeyTable';
 import { User, KeyRound } from 'lucide-react';
@@ -17,6 +19,12 @@ export default function Profile() {
     window.addEventListener('authChange', handleAuthChange);
     return () => window.removeEventListener('authChange', handleAuthChange);
   }, []);
+
+  console.log(user);
+  const { data, loading, error } = useQuery(USER_QUERY, {
+    variables: { id: user?.id! },
+    skip: !user,
+  });
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -42,7 +50,11 @@ export default function Profile() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <PasskeyTable />
+          {loading && <p className="text-gray-500 text-sm">Loading credentials...</p>}
+          {error && <p className="text-red-500 text-sm">Failed to load credentials.
+            {error.message}
+          </p>}
+          {data && <PasskeyTable credentials={data.user.credentials} />}
         </CardContent>
       </Card>
     </div>
