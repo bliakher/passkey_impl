@@ -9,6 +9,7 @@ import { Field, FieldGroup, FieldLabel, FieldError } from "~/components/ui/field
 import { Input } from "~/components/ui/input";
 import { useMutation } from '@apollo/client/react';
 import { LOGIN_MUT } from '~/graphql/mutations/login';
+import { START_PASSKEY_AUTHENTICATION_MUT } from '~/graphql/mutations/startPasskeyAuthentication';
 import { useNavigate } from 'react-router';
 import { saveTokens, saveUser } from '~/lib/auth';
 
@@ -35,6 +36,7 @@ function Divider({ label }: { label: string }) {
 export function LoginForm() {
     const [mode, setMode] = useState<'passkey' | 'password'>('passkey');
     const [login, { error, loading }] = useMutation(LOGIN_MUT);
+    const [startPasskeyAuth] = useMutation(START_PASSKEY_AUTHENTICATION_MUT);
     const navigate = useNavigate();
 
     const form = useForm<LoginFormSchema>({
@@ -44,6 +46,21 @@ export function LoginForm() {
             password: "",
         },
     });
+
+    async function onPasskeyLogin() {
+        const valid = await form.trigger('email');
+        if (!valid) return;
+
+        const email = form.getValues('email');
+        try {
+            const result = await startPasskeyAuth({
+                variables: { username: email },
+            });
+            console.log('startPasskeyAuthentication response:', result.data);
+        } catch (err) {
+            console.error('Passkey auth error:', err);
+        }
+    }
 
     async function onSubmit(values: LoginFormSchema) {
         console.log('Submit:', values);
@@ -93,6 +110,7 @@ export function LoginForm() {
                     <Button
                         variant="outline"
                         className="w-full bg-transparent border-gray-500 text-white hover:bg-gray-700"
+                        onClick={onPasskeyLogin}
                     >
                         <KeyRound className="h-5 w-5" />
                         Continue with Passkeys
