@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Credential } from './credential.model';
 
 @ObjectType()
 export class User {
@@ -7,4 +8,7 @@ export class User {
 
   @Field(() => String)
   username: string;
+
+  @Field(() => [Credential])
+  credentials: Credential[];
 }

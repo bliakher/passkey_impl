@@ -16,11 +16,23 @@ type AuthenticatorSelectionDTO {
   userVerification: RequiredLevel!
 }
 
+type Credential {
+  createdAt: DateTime!
+  device: String!
+  id: String!
+  publicKey: String!
+}
+
 type CredentialDTO {
   id: String!
   transports: [String!]!
   type: String!
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
@@ -32,7 +44,7 @@ type LoginPayload {
   accessTokenTTLSec: Float!
   refreshToken: String!
   refreshTokenTTLSec: Float!
-  user: User!
+  user: UserInfo!
 }
 
 type Mutation {
@@ -92,6 +104,7 @@ type SuccessResult {
 }
 
 type User {
+  credentials: [Credential!]!
   id: ID!
   username: String!
 }
@@ -100,4 +113,9 @@ type UserEntityDTO {
   displayName: String!
   id: String!
   name: String!
+}
+
+type UserInfo {
+  id: ID!
+  username: String!
 }

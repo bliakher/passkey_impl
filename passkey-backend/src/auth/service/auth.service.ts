@@ -208,7 +208,8 @@ export class AuthService {
       },
     });
     // increment counter after every login - replay attack
-    await this.incrementCredentialCounter(credential.id);
+    // TODO: solve for counter = 0, iOS doesn't support counters
+    // await this.incrementCredentialCounter(credential.id);
     return result;
   }
 
