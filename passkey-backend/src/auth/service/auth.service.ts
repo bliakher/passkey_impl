@@ -199,7 +199,7 @@ export class AuthService {
       response: authResponse,
       expectedChallenge: challenge.challenge,
       expectedOrigin: origin,
-      expectedRPID: '',
+      expectedRPID: 'localhost',
       expectedType: 'webauthn.get',
       credential: {
         id: credential.id,
