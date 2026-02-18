@@ -39,7 +39,7 @@ export function Header() {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-4">
           <Link to="/" className="text-xl text-white hover:text-gray-300">
-            <h1>Passkey Auth Test</h1>
+            <h1>Passkey Auth Demo</h1>
           </Link>
           <Link to="/" className="hidden md:block">
             <Button variant="ghost">About</Button>
