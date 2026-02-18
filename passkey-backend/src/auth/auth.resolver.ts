@@ -93,6 +93,7 @@ export class AuthResolver {
       throw new RefreshTokenInvalidError();
     }
     const accessToken = await this.authService.issueAccessToken(user);
+    console.log('Successful refresh, new token:', accessToken);
 
     return {
       accessToken: accessToken,
