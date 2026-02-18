@@ -5,6 +5,7 @@
 type AuthenticationOptionsDTO {
   allowCredentials: [CredentialDTO!]!
   challenge: String!
+  challengeId: String!
   rpId: String!
   timeout: Int!
   userVerification: RequiredLevel!

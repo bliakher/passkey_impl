@@ -39,6 +39,6 @@ model AuthChallenge {
   challenge  String
   created_at DateTime @default(now())
   expires_at DateTime
-  user_id    String
+  user_id    String?
   username   String
 }

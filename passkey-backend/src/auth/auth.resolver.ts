@@ -196,7 +196,15 @@ export class AuthResolver {
       user.credentials,
     );
     console.log('Passkey authentication options:', options);
-    return options;
+    const challenge = await this.authService.saveChallenge({
+      challenge: options.challenge,
+      username,
+    });
+
+    return {
+      challengeId: challenge.id,
+      ...options,
+    };
   }
 
   @Mutation(() => LoginPayload)

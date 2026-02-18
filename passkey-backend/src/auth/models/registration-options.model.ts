@@ -95,6 +95,9 @@ export class SuccessResult {
 @ObjectType()
 export class AuthenticationOptionsDTO {
   @Field(() => String)
+  challengeId: string;
+
+  @Field(() => String)
   rpId: string;
 
   @Field(() => String)

@@ -260,6 +260,6 @@ export interface CredentialData {
 
 export interface AuthChallengeData {
   challenge: string;
-  userId: string;
+  userId?: string;
   username: string;
 }
