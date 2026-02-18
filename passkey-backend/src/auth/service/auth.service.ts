@@ -177,7 +177,7 @@ export class AuthService {
         ? cred.transports.filter(
             (t): t is AuthenticatorTransport => typeof t === 'string',
           )
-        : undefined,
+        : [],
     }));
     const options = await generateAuthenticationOptions({
       rpID: 'localhost',
@@ -219,7 +219,7 @@ export class AuthService {
         public_key: credData.publicKey,
         user_id: credData.userId,
         counter: credData.counter,
-        transports: '',
+        transports: JSON.stringify(credData.transports),
         device: credData.device,
       },
     });
@@ -254,6 +254,7 @@ export interface CredentialData {
   userId: string;
   publicKey: Uint8Array<ArrayBuffer>;
   counter: number;
+  transports?: string[];
   device?: string;
 }
 

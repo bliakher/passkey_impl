@@ -173,6 +173,7 @@ export class AuthResolver {
       id: verifyRes.registrationInfo.credential.id,
       publicKey: verifyRes.registrationInfo.credential.publicKey,
       counter: verifyRes.registrationInfo.credential.counter,
+      transports: verifyRes.registrationInfo.credential.transports,
       device,
     });
 
