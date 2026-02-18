@@ -1,10 +1,10 @@
 import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "Passkey Auth Test" },
-    { name: "description", content: "Passkey authentication test app" },
+    { title: "Passkey Auth Demo" },
+    { name: "description", content: "Passkey authentication demo app" },
   ];
 }
 
