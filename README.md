@@ -16,7 +16,7 @@ The frontend is implemented with the [React](https://react.dev/) framework. Comp
 
 ## Running the project
 
-Prerequisities: Install Node.js and npm v24 - https://nodejs.org/en/download/archive/v24.13.1
+Prerequisites: Install Node.js and npm v24 - https://nodejs.org/en/download/archive/v24.13.1
 
 **1. Run the backend**
 
