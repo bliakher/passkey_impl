@@ -6,7 +6,7 @@ export class Credential {
   id: string;
 
   @Field(() => String)
-  device: string;
+  device: string | null;
 
   @Field(() => Date)
   createdAt: Date;

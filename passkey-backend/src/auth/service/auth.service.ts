@@ -48,7 +48,7 @@ export class AuthService {
   }
 
   async getUserWithCredentials(username: string) {
-    return await this.usersService.getUserWithCredentials(username);
+    return await this.usersService.getUserWithCredentials({ username });
   }
 
   async createUser(username: string, password: string): Promise<User> {

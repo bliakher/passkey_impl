@@ -14,12 +14,21 @@ export class UsersService {
     });
   }
 
-  async getUserWithCredentials(username: string) {
+  async getUserWithCredentials(
+    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
+  ) {
     return await this.prisma.user.findUnique({
-      where: { username },
+      where: userWhereUniqueInput,
       include: { credentials: true },
     });
   }
+
+  // async getUserWithCredentials(username: string) {
+  //   return await this.prisma.user.findUnique({
+  //     where: { username },
+  //     include: { credentials: true },
+  //   });
+  // }
 
   async getUsers(params: {
     skip?: number;
