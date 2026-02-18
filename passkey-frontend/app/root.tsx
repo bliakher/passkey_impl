@@ -13,6 +13,7 @@ import { apolloClient } from "~/apollo";
 import type { Route } from "./+types/root";
 import "./app.css";
 import { Header } from "~/components/Header";
+import { Toaster } from "sonner";
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
@@ -40,6 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <Header />
+        <Toaster position="top-center" offset="20vh" />
         {children}
         <ScrollRestoration />
         <Scripts />

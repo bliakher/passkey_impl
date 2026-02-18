@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { useForm, FormProvider, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { KeyRound } from 'lucide-react';
+import { startAuthentication, type PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser';
+import { toast } from 'sonner';
 
 import { Button } from "~/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldError } from "~/components/ui/field";
@@ -56,7 +58,15 @@ export function LoginForm() {
             const result = await startPasskeyAuth({
                 variables: { username: email },
             });
-            console.log('startPasskeyAuthentication response:', result.data);
+            const allowCredentials = result.data?.startPasskeyAuthentication?.allowCredentials ?? [];
+            if (allowCredentials.length === 0) {
+                toast('There are no passkeys registered to this account. You can register a passkey after you log in.');
+                setMode('password');
+                return;
+            }
+            const optionsJSON = result.data!.startPasskeyAuthentication;
+            const credential = await startAuthentication({ optionsJSON: optionsJSON as PublicKeyCredentialRequestOptionsJSON });
+            console.log('Authentication credential:', credential);
         } catch (err) {
             console.error('Passkey auth error:', err);
         }
