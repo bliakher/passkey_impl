@@ -22,11 +22,11 @@ Prerequisites: Install Node.js and npm v24 - https://nodejs.org/en/download/arch
 
 _You can use the commands below_
 
-1a. Work inside the `passkey-backend` directory
-1b. Create a `.env` file, copy the contents of `.env_schema` into it, you can leave the values for testing
-1c. Install dependencies
-1d. Generate database client and initialize database
-1e. Start the project
+a. Work inside the `passkey-backend` directory
+b. Create a `.env` file, copy the contents of `.env_schema` into it, you can leave the values for testing
+c. Install dependencies
+d. Generate database client and initialize database
+e. Start the project
 
 ```
 cd passkey-backend
