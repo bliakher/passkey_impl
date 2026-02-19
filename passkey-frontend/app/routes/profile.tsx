@@ -4,7 +4,9 @@ import { getUser } from '~/lib/auth';
 import { USER_QUERY } from '~/graphql/queries/user';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '~/components/ui/card';
 import { PasskeyTable } from '~/components/PasskeyTable';
+import { Button } from '~/components/ui/button';
 import { User, KeyRound } from 'lucide-react';
+import { Link } from 'react-router';
 
 export default function Profile() {
   const [user, setUser] = useState<{ id: string; username: string } | null>(null);
@@ -55,6 +57,9 @@ export default function Profile() {
             {error.message}
           </p>}
           {data && <PasskeyTable credentials={data.user.credentials} />}
+          <Link to="/passkey" className="mt-4 inline-block">
+            <Button variant="outline" className="border-gray-400 text-gray-700 hover:bg-gray-700 hover:text-white">Register New Passkey</Button>
+          </Link>
         </CardContent>
       </Card>
     </div>
