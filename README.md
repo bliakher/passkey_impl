@@ -20,13 +20,19 @@ Prerequisites: Install Node.js and npm v24 - https://nodejs.org/en/download/arch
 
 **1. Run the backend**
 
-- work inside the `passkey-backend` directory
-- install dependencies
-- start the project
+_You can use the commands below_
+
+1a. Work inside the `passkey-backend` directory
+1b. Create a `.env` file, copy the contents of `.env_schema` into it, you can leave the values for testing
+1c. Install dependencies
+1d. Generate database client and initialize database
+1e. Start the project
 
 ```
 cd passkey-backend
+touch .env && cat .env_schema > .env
 npm install
+npm run prisma:init
 npm run start:dev
 ```
 
