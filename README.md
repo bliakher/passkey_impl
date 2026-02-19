@@ -12,7 +12,8 @@ The backend is implemented in Node.js using the [Nest.js](https://nestjs.com/) f
 
 ### Frontend
 
-The frontend is implemented with the [React](https://react.dev/) framework. Components from [Shadcn](https://ui.shadcn.com/) were used for UI.
+The frontend is implemented with the [React](https://react.dev/) framework. Components from [Shadcn](https://ui.shadcn.com/) were used for UI. 
+Claude Code was used for generating the GraphQL client and for creating some of the components.
 
 ## Running the project
 
@@ -50,11 +51,28 @@ npm run dev
 
 - the application will be available at: `http://localhost:5173`
 
-**3. Register**
-- register with username and password
+## Passkey Demo
 
-**4. Add a passkey credential to your account**
+In this application we explore a scenario where passkeys are an additional method of authentication, on top of classic password authentication, as this would be the case if an existing application wanted to add passkeys as an authentication method. Registering a passkey to an account is a priviledged operation, available to the user only after logging in. The passkeys are not discoverable, meaning that the user has to enter their username when logging in. This allows the backend to connect multiple credentials from different device to the same user account without another form of account synchronization, such as through email.
+
+Passkey registering and authentication flow:
+
+**1. Register**
+- register an account with username and password
+
+**2. Add a passkey credential to your account**
 - after the registration, you will be prompted to add a passkey credential to your account
 
-**5. Log in with passkeys**
+**3. List of passkeys displayed in user profile**
+- you can see a list of passkeys registered to the account in user profile
+- you can register additional passkeys
+
+**4. Log in with passkeys**
+- log out
 - you will now be able to log in without a password, using your passkey
+
+## Passkey implementation
+
+### Registering a passkey
+
+After user chooses to register a passkey, a request is first sent to
