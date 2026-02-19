@@ -13,7 +13,7 @@ The backend is implemented in Node.js using the [Nest.js](https://nestjs.com/) f
 ### Frontend
 
 The frontend is implemented with the [React](https://react.dev/) framework. Components from [Shadcn](https://ui.shadcn.com/) were used for UI. 
-Claude Code was used for generating the GraphQL client and for creating some of the components.
+Claude Code AI agent was used for generating the GraphQL client and for creating some of the components.
 
 ## Running the project
 
