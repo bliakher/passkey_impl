@@ -70,6 +70,13 @@ export class AuthService {
     });
   }
 
+  async invalidateChallenge(id: string) {
+    return await this.dbService.authChallenge.update({
+      where: { id },
+      data: { is_valid: false },
+    });
+  }
+
   async hashPassword(password: string): Promise<string> {
     const pepper = process.env.PASSWD_PEPPER;
     if (!pepper) {
@@ -167,6 +174,8 @@ export class AuthService {
       expectedType: 'webauthn.create',
       expectedOrigin: origin,
     });
+    // challenge should be used only once
+    await this.invalidateChallenge(challenge.id);
     return result;
   }
 
@@ -207,6 +216,8 @@ export class AuthService {
         counter: credential.counter,
       },
     });
+    // challenge should be used only once
+    await this.invalidateChallenge(challenge.id);
     // increment counter after every login - replay attack
     // TODO: solve for counter = 0, iOS doesn't support counters
     // await this.incrementCredentialCounter(credential.id);
@@ -243,8 +254,13 @@ export class AuthService {
       where: { id },
     });
     console.log('challenge:', challenge, 'date:', new Date());
-    // check expiration date
-    if (challenge == null || challenge.expires_at < new Date()) return null;
+    // check expiration date and validity
+    if (
+      challenge == null ||
+      !challenge.is_valid ||
+      challenge.expires_at < new Date()
+    )
+      return null;
 
     return challenge;
   }
